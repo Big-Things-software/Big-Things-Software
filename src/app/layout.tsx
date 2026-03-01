@@ -17,6 +17,9 @@ export const metadata: Metadata = {
   title: "Big Things Software",
   description:
     "A nonprofit empowering open-source innovation through funding, freelancing, product exposure, and integration tools.",
+  icons: {
+    icon: "/favicon.png", // This tells Next.js to use your PNG favicon
+  },
 };
 
 export default function RootLayout({
