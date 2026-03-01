@@ -12,7 +12,7 @@ export default function Header() {
       <div className="header__inner">
         <Link href="/" className="header__logo-link" aria-label="Home">
           <Image
-            src={theme === "dark" ? "/dark-logo.png" : "/light-logo.png"}
+            src={theme === "dark" ? "/transparent-logo.png" : "/light-logo.png"}
             alt="Big Things"
             width={48}
             height={48}
