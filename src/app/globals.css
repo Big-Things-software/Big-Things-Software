@@ -68,7 +68,7 @@ body {
 body::before,
 body::after {
   content: "";
-  position: fixed;
+  position: absolute;
   border-radius: 50%;
   pointer-events: none;
   z-index: 0;
@@ -91,7 +91,7 @@ body::before {
 body::after {
   width: 900px;
   height: 900px;
-  bottom: -350px;
+  top: calc(50vh - 100px);
   left: -350px;
   background: radial-gradient(
     circle,
@@ -186,26 +186,31 @@ img {
   width: 100%;
 }
 
-.theme-toggle {
+.theme-toggle-float {
+  position: fixed;
+  bottom: 2rem;
+  right: 2rem;
+  z-index: 100;
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 44px;
-  height: 44px;
+  width: 52px;
+  height: 52px;
   border: 1px solid var(--color-border);
   border-radius: 50%;
   background: var(--color-surface);
-  backdrop-filter: blur(8px);
+  backdrop-filter: blur(16px);
   color: var(--color-text);
   cursor: pointer;
   transition: all var(--transition);
+  box-shadow: 0 4px 24px var(--color-shadow);
 }
 
-.theme-toggle:hover {
+.theme-toggle-float:hover {
   border-color: var(--color-accent);
   color: var(--color-accent);
-  transform: scale(1.1);
-  box-shadow: 0 4px 12px var(--color-accent-glow);
+  transform: scale(1.08);
+  box-shadow: 0 8px 32px var(--color-accent-glow);
 }
 
 .main {
@@ -620,6 +625,109 @@ img {
   font-size: 0.875rem;
   color: var(--color-text-muted);
   font-weight: 500;
+}
+
+.section-divider {
+  border: none;
+  height: 1px;
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    var(--color-border) 15%,
+    var(--color-accent) 50%,
+    var(--color-border) 85%,
+    transparent 100%
+  );
+  margin: 0;
+  position: relative;
+  z-index: 1;
+}
+
+.accordion {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.accordion-item {
+  background: var(--color-surface);
+  backdrop-filter: blur(16px);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius);
+  overflow: hidden;
+  transition: border-color var(--transition), box-shadow var(--transition);
+}
+
+.accordion-item--open {
+  border-color: var(--color-accent);
+  box-shadow: 0 8px 24px var(--color-shadow);
+}
+
+.accordion-trigger {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 1.5rem 2rem;
+  background: none;
+  border: none;
+  cursor: pointer;
+  text-align: left;
+  color: var(--color-text);
+  font-family: var(--font-sans);
+  transition: color var(--transition);
+}
+
+.accordion-trigger:hover {
+  color: var(--color-accent);
+}
+
+.accordion-number {
+  flex-shrink: 0;
+  width: 2.25rem;
+  height: 2.25rem;
+  background: linear-gradient(135deg, var(--color-accent) 0%, #06b6d4 100%);
+  color: #ffffff;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1rem;
+  font-weight: 700;
+  box-shadow: 0 4px 12px var(--color-accent-glow);
+}
+
+.accordion-title {
+  flex: 1;
+  font-size: 1.0625rem;
+  font-weight: 600;
+}
+
+.accordion-chevron {
+  flex-shrink: 0;
+  color: var(--color-text-muted);
+  transition: transform var(--transition), color var(--transition);
+}
+
+.accordion-item--open .accordion-chevron {
+  transform: rotate(180deg);
+  color: var(--color-accent);
+}
+
+.accordion-body {
+  padding: 0 2rem 1.5rem 5.25rem;
+  color: var(--color-text-muted);
+  font-size: 1rem;
+  line-height: 1.7;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.accordion-summary {
+  font-size: 0.9375rem;
+  font-weight: 600;
+  color: var(--color-accent);
 }
 
 @media (max-width: 768px) {

@@ -3,6 +3,7 @@
 import { ThemeProvider } from "@/context/ThemeContext";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
+import ThemeToggle from "@/components/ThemeToggle";
 import type { ReactNode } from "react";
 
 export default function ClientShell({ children }: { children: ReactNode }) {
@@ -11,6 +12,7 @@ export default function ClientShell({ children }: { children: ReactNode }) {
       <Header />
       <main className="main">{children}</main>
       <Footer />
+      <ThemeToggle />
     </ThemeProvider>
   );
 }

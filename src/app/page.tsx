@@ -32,6 +32,8 @@ export default function Home() {
         </div>
       </section>
 
+      <hr className="section-divider" />
+
       <section className="section">
         <div className="section__inner">
           <h2 className="section__heading">What We Do</h2>
@@ -72,6 +74,8 @@ export default function Home() {
           </div>
         </div>
       </section>
+
+      <hr className="section-divider" />
 
       <section className="section section--accent">
         <div className="section__inner section__inner--center">
