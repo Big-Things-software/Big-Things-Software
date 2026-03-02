@@ -1,21 +1,25 @@
 "use client";
 
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useCallback } from "react";
 import Image from "next/image";
 import Link from "next/link";
 
-function InteractiveNetwork() {
+function InteractiveNetwork({ active }: { active: boolean }) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
+    if (!active) return;
+
     const canvas = canvasRef.current!;
     const container = containerRef.current!;
     const ctx = canvas.getContext("2d")!;
     let nodes: any[] = [];
     let mouse = { x: -1000, y: -1000 };
+    let animationFrameId: number;
 
     const init = () => {
+      if (!container) return;
       canvas.width = container.offsetWidth;
       canvas.height = container.offsetHeight;
       nodes = Array.from({ length: 50 }).map(() => ({
@@ -77,129 +81,169 @@ function InteractiveNetwork() {
         }
         ctx.shadowBlur = 0;
       });
-      requestAnimationFrame(animate);
+      animationFrameId = requestAnimationFrame(animate);
     };
 
     const move = (e: MouseEvent) => { mouse.x = e.clientX; mouse.y = e.clientY; };
     window.addEventListener("mousemove", move);
     window.addEventListener("resize", init);
-    init(); animate();
+    init();
+    animate();
+
     return () => {
       window.removeEventListener("mousemove", move);
       window.removeEventListener("resize", init);
+      cancelAnimationFrame(animationFrameId);
     };
-  }, []);
+  }, [active]);
 
   return (
-    <div ref={containerRef} className="absolute inset-0 z-0 overflow-hidden bg-[#020617]">
+    <div ref={containerRef} className={`absolute inset-0 z-0 bg-[#020617] transition-opacity duration-1000 ease-in-out ${active ? 'opacity-100' : 'opacity-0'}`}>
       <canvas ref={canvasRef} className="block" />
     </div>
   );
 }
 
-function ScrambleText({ text, active }: { text: string; active: boolean }) {
+function ScrambleText({ text, active, onComplete }: { text: string; active: boolean; onComplete?: () => void; }) {
   const [display, setDisplay] = useState("");
-  const chars = "!<>-_\\/[]{}—=+*^?#________";
+  const chars = "!<>-_\/[]{}—=+*^?#________";
+  const hasCompleted = useRef(false);
+
   useEffect(() => {
-    if (!active) return;
+    if (!active || hasCompleted.current) return;
+    
     let iteration = 0;
     const interval = setInterval(() => {
-      setDisplay(text.split("").map((c, i) => {
-        if (i < iteration) return text[i];
-        return chars[Math.floor(Math.random() * chars.length)];
-      }).join(""));
-      if (iteration >= text.length) clearInterval(interval);
+      setDisplay(
+        text
+          .split("")
+          .map((c, i) => {
+            if (i < iteration) return text[i];
+            return chars[Math.floor(Math.random() * chars.length)];
+          })
+          .join("")
+      );
+      if (iteration >= text.length) {
+        clearInterval(interval);
+        if (onComplete) {
+          onComplete();
+          hasCompleted.current = true;
+        }
+      }
       iteration += 1 / 3;
     }, 30);
+
     return () => clearInterval(interval);
-  }, [active, text]);
+  }, [active, text, onComplete]);
+
   return <>{display}</>;
 }
 
 export default function Home() {
   const [bootPhase, setBootPhase] = useState("loading");
+  const [textDecrypted, setTextDecrypted] = useState(false);
 
   useEffect(() => {
     const timer = setTimeout(() => setBootPhase("active"), 2500);
     return () => clearTimeout(timer);
   }, []);
 
+  const onScrambleComplete = useCallback(() => {
+    setTextDecrypted(true);
+  }, []);
+
   const isActive = bootPhase === "active";
 
   return (
-    <div className={!isActive ? "overflow-hidden h-screen" : ""}>
+    <>
       <section className="relative h-screen overflow-hidden">
-        <InteractiveNetwork />
+        <InteractiveNetwork active={isActive} />
         
-        <div className={`relative z-10 h-full flex items-center transition-all duration-[1200ms] ease-[cubic-bezier(0.8,0,0.2,1)] ${isActive ? "justify-start px-[8%]" : "justify-center"}`}>
-          <div className={`transition-all duration-[1200ms] ease-[cubic-bezier(0.8,0,0.2,1)] ${isActive ? "scale-75 lg:scale-90" : "scale-100"}`}>
+        <div className={`relative z-10 h-full flex items-center transition-all duration-[1200ms] ease-[cubic-bezier(0.8,0,0.2,1)] ${isActive ? "justify-start" : "justify-center"}`}>
+          
+          {!isActive && (
+            <div className="transition-opacity duration-300">
+              <Image
+                src="/logo-anim.gif"
+                alt="Loading..."
+                width={240}
+                height={240}
+                priority
+              />
+            </div>
+          )}
+
+          <div className={`absolute left-0 flex items-center bg-white/5 backdrop-blur-[60px] border-y border-r border-white/10 rounded-r-lg pl-[5%] pr-12 !pb-5 transition-all duration-1000 ease-[cubic-bezier(0.8,0,0.2,1)] ${isActive ? "opacity-100" : "opacity-0 -translate-x-10 pointer-events-none"}`}>
             <Image
-              src={!isActive ? "/logo-anim.gif" : "/normal-logo.png"}
+              src="/transparent-logo.png"
               alt="Big Things Software"
               width={240}
               height={240}
               priority
             />
-          </div>
-
-          <div className={`ml-[5vw] max-w-2xl bg-white/5 backdrop-blur-[30px] border border-white/10 p-8 lg:p-12 rounded-sm transition-all duration-1000 delay-500 ${isActive ? "opacity-100 translate-x-0" : "opacity-0 translate-x-10 pointer-events-none hidden"}`}>
-            <h1 className="text-white text-4xl lg:text-6xl font-black leading-none mb-6 uppercase tracking-tighter italic">
-              <ScrambleText text="SHAPING THE FUTURE OF OPEN SOURCE" active={isActive} />
-            </h1>
-            <p className="text-lg text-slate-400 leading-relaxed mb-8 font-light">
-              We aren&apos;t just a nonprofit; we&apos;re an incubator for impact. 
-              Bridging the gap between elite talent and the capital needed to 
-              build tools that change the world.
-            </p>
-            <div className="flex gap-4">
-              <Link href="/about" className="btn btn--primary">Learn More</Link>
-              <Link href="/contact" className="btn btn--outline">Get In Touch</Link>
+            <div className="ml-12 max-w-2xl">
+              <h1 className="text-white text-4xl lg:text-6xl font-black leading-none mb-6 uppercase tracking-tighter italic">
+                <ScrambleText text="SHAPING THE FUTURE OF OPEN SOURCE" active={isActive} onComplete={onScrambleComplete} />
+              </h1>
+              <div className={`transition-all duration-1000 ease-[cubic-bezier(0.8,0,0.2,1)] delay-500 ${textDecrypted ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-5 pointer-events-none'}`}>
+                <p className="text-lg text-slate-400 leading-relaxed mb-8 font-light">
+                  We aren't just a nonprofit; we're an incubator for impact. 
+                  Bridging the gap between elite talent and the capital needed to 
+                  build tools that change the world.
+                </p>
+                <div className="flex gap-4">
+                  <Link href="/about" className="btn btn--primary">Learn More</Link>
+                  <Link href="/contact" className="btn btn--outline">Get In Touch</Link>
+                </div>
+              </div>
             </div>
           </div>
         </div>
       </section>
 
-      <div className={`relative z-10 transition-all duration-1000 delay-[1500ms] ${isActive ? "opacity-100" : "opacity-0 pointer-events-none"}`}>
-        <hr className="section-divider" />
-        <section className="section bg-[#020617]">
-          <div className="section__inner">
-            <h2 className="section__heading text-white">What We Do</h2>
-            <p className="section__description text-slate-400">
-              We refine the development processes of high-quality developers for
-              the public, free of charge. Our tools bridge the gap between talent,
-              funding, and impact.
-            </p>
-            <div className="pillars">
-              <article className="pillar-card bg-white/5 border-white/10">
-                <h3 className="pillar-card__title text-sky-400">Funding</h3>
-                <p className="pillar-card__desc text-slate-400">Connecting open-source maintainers with sustainable funding so great software never goes unsupported.</p>
-              </article>
-              <article className="pillar-card bg-white/5 border-white/10">
-                <h3 className="pillar-card__title text-sky-400">Freelancing</h3>
-                <p className="pillar-card__desc text-slate-400">Giving skilled developers the tools and exposure to contribute to meaningful projects.</p>
-              </article>
-              <article className="pillar-card bg-white/5 border-white/10">
-                <h3 className="pillar-card__title text-sky-400">Product Exposure</h3>
-                <p className="pillar-card__desc text-slate-400">Amplifying visibility for open-source products so they reach the communities that need them.</p>
-              </article>
-              <article className="pillar-card bg-white/5 border-white/10">
-                <h3 className="pillar-card__title text-sky-400">Integration</h3>
-                <p className="pillar-card__desc text-slate-400">Reducing friction between open-source tools and the people who use them every day.</p>
-              </article>
+      {isActive && (
+        <div className="relative z-10 bg-[#020617] transition-opacity duration-1000 ease-in-out">
+          <hr className="section-divider" />
+          <section className="section">
+            <div className="section__inner">
+              <h2 className="section__heading text-white">What We Do</h2>
+              <p className="section__description text-slate-400">
+                We refine the development processes of high-quality developers for
+                the public, free of charge. Our tools bridge the gap between talent,
+                funding, and impact.
+              </p>
+              <div className="pillars">
+                <article className="pillar-card bg-white/5 border-white/10">
+                  <h3 className="pillar-card__title text-sky-400">Funding</h3>
+                  <p className="pillar-card__desc text-slate-400">Connecting open-source maintainers with sustainable funding so great software never goes unsupported.</p>
+                </article>
+                <article className="pillar-card bg-white/5 border-white/10">
+                  <h3 className="pillar-card__title text-sky-400">Freelancing</h3>
+                  <p className="pillar-card__desc text-slate-400">Giving skilled developers the tools and exposure to contribute to meaningful projects.</p>
+                </article>
+                <article className="pillar-card bg-white/5 border-white/10">
+                  <h3 className="pillar-card__title text-sky-400">Product Exposure</h3>
+                  <p className="pillar-card__desc text-slate-400">Amplifying visibility for open-source products so they reach the communities that need them.</p>
+                </article>
+                <article className="pillar-card bg-white/5 border-white/10">
+                  <h3 className="pillar-card__title text-sky-400">Integration</h3>
+                  <p className="pillar-card__desc text-slate-400">Reducing friction between open-source tools and the people who use them every day.</p>
+                </article>
+              </div>
             </div>
-          </div>
-        </section>
+          </section>
 
-        <hr className="section-divider" />
+          <hr className="section-divider" />
 
-        <section className="section section--accent bg-[#020617]">
-          <div className="section__inner section__inner--center">
-            <h2 className="section__heading text-white">Our Team Could Feature You</h2>
-            <p className="section__description text-slate-400">We&apos;re always looking for passionate developers, designers, and advocates to join our mission.</p>
-            <Link href="/contact" className="btn btn--primary">Join Us</Link>
-          </div>
-        </section>
-      </div>
-    </div>
+          <section className="section section--accent">
+            <div className="section__inner section__inner--center">
+              <h2 className="section__heading text-white">Our Team Could Feature You</h2>
+              <p className="section__description text-slate-400">We're always looking for passionate developers, designers, and advocates to join our mission.</p>
+              <Link href="/contact" className="btn btn--primary">Join Us</Link>
+            </div>
+          </section>
+        </div>
+      )}
+    </>
   );
 }
