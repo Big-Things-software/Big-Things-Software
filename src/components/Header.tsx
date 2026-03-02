@@ -21,7 +21,7 @@ export default function Header() {
           <span className="header__brand">Big Things</span>
         </Link>
 
-        <nav aria-label="Main navigation">
+        <nav className="header__nav" aria-label="Main navigation">
           <ul className="header__nav-list">
             <li>
               <Link href="/" className="header__nav-link">Home</Link>
@@ -34,6 +34,9 @@ export default function Header() {
             </li>
           </ul>
         </nav>
+        
+        <div className="header__spacer"></div>
+
       </div>
     </header>
   );
