@@ -177,15 +177,13 @@ export default function Home() {
               <motion.div
                 key="loader"
                 className="absolute z-20"
-                exit={{ opacity: 0 }}
-                transition={{ duration: 0.5 }}
               >
                 <motion.div layoutId="logo-animation" transition={logoTransition}>
                   <Image
                     src="/animated-logo.svg"
                     alt="Loading..."
-                    width={240}
-                    height={240}
+                    width={480}
+                    height={480}
                     priority
                   />
                 </motion.div>
@@ -198,7 +196,7 @@ export default function Home() {
               className="absolute inset-0 bg-white/5 backdrop-blur-[60px] border-y border-r border-white/10 rounded-r-lg"
               initial={{ opacity: 0 }}
               animate={{ opacity: isActive ? 1 : 0 }}
-              transition={{ duration: 0.7, ease: 'easeIn', delay: 1.5 }}
+              transition={{ duration: 0.7, ease: 'easeIn', delay: .2 }}
             />
             
             <motion.div className="relative" layoutId="logo-animation" transition={logoTransition}>
@@ -215,7 +213,7 @@ export default function Home() {
                 className="relative ml-12 max-w-2xl py-16"
                 initial={{ opacity: 0 }}
                 animate={{ opacity: isActive ? 1 : 0 }}
-                transition={{ duration: 1, ease: 'easeIn', delay: 1.7 }}
+                transition={{ duration: 1, ease: 'easeIn', delay: .2 }}
             >
               <div className={isActive ? 'pointer-events-auto' : ''}>
                 <h1 className="text-white text-4xl lg:text-6xl font-black leading-none !py-3 uppercase tracking-tighter italic">
