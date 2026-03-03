@@ -157,7 +157,7 @@ img {
 .header__brand {
   font-size: 1.25rem;
   font-weight: 700;
-  color: var(--color-accent);
+  color: #0098d7;
   white-space: nowrap;
 }
 

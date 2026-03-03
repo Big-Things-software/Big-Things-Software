@@ -8,7 +8,7 @@ export default function ThemeToggle() {
   return (
     <button
       onClick={toggleTheme}
-      className="theme-toggle-float"
+      className="fixed bottom-8 right-8 z-[100] flex items-center justify-center w-[52px] h-[52px] border border-slate-300/20 dark:border-slate-700/30 rounded-full bg-white/70 dark:bg-slate-900/60 backdrop-blur-xl text-slate-900 dark:text-slate-100 cursor-pointer transition-all duration-300 ease-[cubic-bezier(0.4,0,0.2,1)] shadow-[0_4px_24px_rgba(0,0,0,0.1)] dark:shadow-[0_4px_24px_rgba(0,0,0,0.6)] hover:border-sky-600 dark:hover:border-cyan-500 hover:text-sky-600 dark:hover:text-cyan-500 hover:scale-108 hover:shadow-[0_8px_32px_rgba(0,151,214,0.3)] dark:hover:shadow-[0_8px_32px_rgba(6,182,212,0.5)]"
       aria-label={`Switch to ${theme === "light" ? "dark" : "light"} mode`}
       type="button"
     >

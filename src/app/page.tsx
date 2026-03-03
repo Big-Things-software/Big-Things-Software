@@ -181,17 +181,17 @@ export default function Home() {
               height={240}
               priority
             />
-            <div className="ml-12 max-w-2xl">
-              <h1 className="text-white text-4xl lg:text-6xl font-black leading-none mb-6 uppercase tracking-tighter italic">
+            <div className="ml-12 max-w-2xl py-16">
+              <h1 className="text-white text-4xl lg:text-6xl font-black leading-none !py-3 uppercase tracking-tighter italic">
                 <ScrambleText text="SHAPING THE FUTURE OF OPEN SOURCE" active={isActive} onComplete={onScrambleComplete} />
               </h1>
               <div className={`transition-all duration-1000 ease-[cubic-bezier(0.8,0,0.2,1)] delay-500 ${textDecrypted ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-5 pointer-events-none'}`}>
-                <p className="text-lg text-slate-400 leading-relaxed mb-8 font-light">
+                <p className="text-lg text-slate-400 leading-relaxed !py-3 font-light">
                   We aren't just a nonprofit; we're an incubator for impact. 
                   Bridging the gap between elite talent and the capital needed to 
                   build tools that change the world.
                 </p>
-                <div className="flex gap-4">
+                <div className="flex gap-4 !py-3">
                   <Link href="/about" className="btn btn--primary">Learn More</Link>
                   <Link href="/contact" className="btn btn--outline">Get In Touch</Link>
                 </div>
