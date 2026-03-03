@@ -3,6 +3,7 @@
 import { useState, useEffect, useRef, useCallback } from "react";
 import Image from "next/image";
 import Link from "next/link";
+import { motion, AnimatePresence } from "framer-motion";
 
 function InteractiveNetwork({ active }: { active: boolean }) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -98,9 +99,15 @@ function InteractiveNetwork({ active }: { active: boolean }) {
   }, [active]);
 
   return (
-    <div ref={containerRef} className={`absolute inset-0 z-0 bg-[#020617] transition-opacity duration-1000 ease-in-out ${active ? 'opacity-100' : 'opacity-0'}`}>
+    <motion.div 
+      ref={containerRef} 
+      className="absolute inset-0 z-0 bg-[#020617]"
+      initial={{ opacity: 0 }}
+      animate={{ opacity: active ? 1 : 0 }}
+      transition={{ duration: 1, ease: 'easeIn' }}
+    >
       <canvas ref={canvasRef} className="block" />
-    </div>
+    </motion.div>
   );
 }
 
@@ -110,14 +117,17 @@ function ScrambleText({ text, active, onComplete }: { text: string; active: bool
   const hasCompleted = useRef(false);
 
   useEffect(() => {
-    if (!active || hasCompleted.current) return;
+    if (!active || hasCompleted.current) {
+        if (active) setDisplay(text);
+        return;
+    };
     
     let iteration = 0;
     const interval = setInterval(() => {
       setDisplay(
         text
           .split("")
-          .map((c, i) => {
+          .map((_, i) => {
             if (i < iteration) return text[i];
             return chars[Math.floor(Math.random() * chars.length)];
           })
@@ -153,56 +163,95 @@ export default function Home() {
   }, []);
 
   const isActive = bootPhase === "active";
+  const logoTransition = { duration: 1, ease: [0.6, 0.01, -0.05, 0.9], delay: 1.5 };
 
   return (
     <>
       <section className="relative h-screen overflow-hidden">
         <InteractiveNetwork active={isActive} />
         
-        <div className={`relative z-10 h-full flex items-center transition-all duration-[1200ms] ease-[cubic-bezier(0.8,0,0.2,1)] ${isActive ? "justify-start" : "justify-center"}`}>
-          
-          {!isActive && (
-            <div className="transition-opacity duration-300">
+        <div className="relative z-10 h-full flex items-center justify-center">
+        
+          <AnimatePresence>
+            {!isActive && (
+              <motion.div
+                key="loader"
+                className="absolute z-20"
+                exit={{ opacity: 0 }}
+                transition={{ duration: 0.5 }}
+              >
+                <motion.div layoutId="logo-animation" transition={logoTransition}>
+                  <Image
+                    src="/logo-anim.gif"
+                    alt="Loading..."
+                    width={240}
+                    height={240}
+                    priority
+                  />
+                </motion.div>
+              </motion.div>
+            )}
+          </AnimatePresence>
+
+          <div className={`absolute left-0 flex items-center pl-[5%] pr-12 !pb-5 pointer-events-none`}>
+            <motion.div
+              className="absolute inset-0 bg-white/5 backdrop-blur-[60px] border-y border-r border-white/10 rounded-r-lg"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: isActive ? 1 : 0 }}
+              transition={{ duration: 0.7, ease: 'easeIn', delay: 1.5 }}
+            />
+            
+            <motion.div className="relative" layoutId="logo-animation" transition={logoTransition}>
               <Image
-                src="/logo-anim.gif"
-                alt="Loading..."
+                src="/transparent-logo.png"
+                alt="Big Things Software"
                 width={240}
                 height={240}
                 priority
               />
-            </div>
-          )}
-
-          <div className={`absolute left-0 flex items-center bg-white/5 backdrop-blur-[60px] border-y border-r border-white/10 rounded-r-lg pl-[5%] pr-12 !pb-5 transition-all duration-1000 ease-[cubic-bezier(0.8,0,0.2,1)] ${isActive ? "opacity-100" : "opacity-0 -translate-x-10 pointer-events-none"}`}>
-            <Image
-              src="/transparent-logo.png"
-              alt="Big Things Software"
-              width={240}
-              height={240}
-              priority
-            />
-            <div className="ml-12 max-w-2xl py-16">
-              <h1 className="text-white text-4xl lg:text-6xl font-black leading-none !py-3 uppercase tracking-tighter italic">
-                <ScrambleText text="SHAPING THE FUTURE OF OPEN SOURCE" active={isActive} onComplete={onScrambleComplete} />
-              </h1>
-              <div className={`transition-all duration-1000 ease-[cubic-bezier(0.8,0,0.2,1)] delay-500 ${textDecrypted ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-5 pointer-events-none'}`}>
-                <p className="text-lg text-slate-400 leading-relaxed !py-3 font-light">
-                  We aren't just a nonprofit; we're an incubator for impact. 
-                  Bridging the gap between elite talent and the capital needed to 
-                  build tools that change the world.
-                </p>
-                <div className="flex gap-4 !py-3">
-                  <Link href="/about" className="btn btn--primary">Learn More</Link>
-                  <Link href="/contact" className="btn btn--outline">Get In Touch</Link>
-                </div>
+            </motion.div>
+            
+            <motion.div
+                className="relative ml-12 max-w-2xl py-16"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: isActive ? 1 : 0 }}
+                transition={{ duration: 1, ease: 'easeIn', delay: 1.7 }}
+            >
+              <div className={isActive ? 'pointer-events-auto' : ''}>
+                <h1 className="text-white text-4xl lg:text-6xl font-black leading-none !py-3 uppercase tracking-tighter italic">
+                  <ScrambleText text="SHAPING THE FUTURE OF OPEN SOURCE" active={isActive} onComplete={onScrambleComplete} />
+                </h1>
+                <motion.div
+                    initial={{ opacity: 0, y: 5 }}
+                    animate={{ 
+                      opacity: textDecrypted ? 1 : 0, 
+                      y: textDecrypted ? 0 : 5 
+                    }}
+                    transition={{ duration: 0.8, ease: [0.8, 0, 0.2, 1], delay: 0.2 }}
+                >
+                  <p className="text-lg text-slate-400 leading-relaxed !py-3 font-light">
+                    We aren't just a nonprofit; we're an incubator for impact. 
+                    Bridging the gap between elite talent and the capital needed to 
+                    build tools that change the world.
+                  </p>
+                  <div className="flex gap-4 !py-3">
+                    <Link href="/about" className="btn btn--primary">Learn More</Link>
+                    <Link href="/contact" className="btn btn--outline">Get In Touch</Link>
+                  </div>
+                </motion.div>
               </div>
-            </div>
+            </motion.div>
           </div>
         </div>
       </section>
 
       {isActive && (
-        <div className="relative z-10 bg-[#020617] transition-opacity duration-1000 ease-in-out">
+        <motion.div 
+          className="relative z-10 bg-[#020617]"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ duration: 1, ease: 'easeIn' }}
+        >
           <hr className="section-divider" />
           <section className="section">
             <div className="section__inner">
@@ -242,7 +291,7 @@ export default function Home() {
               <Link href="/contact" className="btn btn--primary">Join Us</Link>
             </div>
           </section>
-        </div>
+        </motion.div>
       )}
     </>
   );
