@@ -182,7 +182,7 @@ export default function Home() {
               >
                 <motion.div layoutId="logo-animation" transition={logoTransition}>
                   <Image
-                    src="/logo-anim.gif"
+                    src="/animated-logo.svg"
                     alt="Loading..."
                     width={240}
                     height={240}
@@ -203,7 +203,7 @@ export default function Home() {
             
             <motion.div className="relative" layoutId="logo-animation" transition={logoTransition}>
               <Image
-                src="/transparent-logo.png"
+                src="/animated-logo.svg"
                 alt="Big Things Software"
                 width={240}
                 height={240}
