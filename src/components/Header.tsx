@@ -1,120 +1,74 @@
-'use client';
+﻿import Image from "next/image";
+import Link from "next/link";
 
-import Image from 'next/image';
-import Link from 'next/link';
-import { useTheme } from '@/context/ThemeContext';
+const NAV_LINK =
+  "text-[15px] font-medium text-[var(--color-text-muted)] relative transition-all duration-300 hover:text-[var(--color-accent)] after:content-[''] after:absolute after:bottom-0 after:left-0 after:w-0 after:h-[2px] after:bg-[var(--color-accent)] after:transition-[width] after:duration-300 hover:after:w-full";
+
+const DROPDOWN_LINK =
+  "text-[var(--color-text-muted)] text-sm py-2 px-3 block transition-colors duration-300 text-left hover:text-[var(--color-accent)]";
+
+const DROPDOWN_MENU =
+  "absolute top-full left-1/2 -translate-x-1/2 translate-y-2.5 bg-[var(--color-surface)] backdrop-blur-md border border-[var(--color-border)] rounded-xl p-4 min-w-[160px] list-none opacity-0 invisible transition-all duration-300 z-[100] shadow-[0_10px_30px_var(--color-shadow)] group-hover:opacity-100 group-hover:visible group-hover:translate-y-0";
 
 export default function Header() {
-  const { theme } = useTheme();
-
-  const navLinkClasses = `!inline-block !pb-2 !text-[0.9375rem] !font-medium !text-slate-500 dark:!text-slate-400 !transition-all !duration-300 !ease-in-out !relative after:!content-[''] after:!absolute after:!bottom-0 after:!left-0 after:!w-0 after:!h-[2px] after:!bg-[#0097d6] dark:after:!bg-[#06b6d4] after:!transition-[width] after:!duration-300 after:!ease-in-out hover:!text-[#0097d6] dark:hover:!text-[#06b6d4] hover:after:!w-full`;
-
-  const dropdownMenuClasses = `!absolute !top-full !left-1/2 !-translate-x-1/2 !translate-y-4 !bg-white dark:!bg-slate-900 !border !border-slate-400/20 dark:!border-slate-500/30 !rounded-xl !p-2 !min-w-[160px] !opacity-0 !invisible group-hover:!opacity-100 group-hover:!visible group-hover:!translate-y-2 !transition-all !duration-300 !ease-in-out !z-50 !shadow-lg dark:!shadow-black/20 !flex !flex-col !gap-1`;
-
-  const dropdownItemClasses = `!block !text-slate-500 dark:!text-slate-400 !text-[0.9rem] !px-3 !py-2 !transition-colors !duration-300 !ease-in-out !text-left hover:!text-[#0097d6] dark:hover:!text-[#06b6d4] !rounded-md hover:!bg-slate-200/50 dark:hover:!bg-slate-800/50`;
-
   return (
-    <header className='!sticky !top-0 !z-50 !h-[80px] !bg-white/70 dark:!bg-slate-900/60 !backdrop-blur-lg !backdrop-saturate-180 !border-b !border-slate-400/20 dark:!border-slate-500/30 !transition-all !duration-300 !ease-in-out'>
-      <div className='!grid !grid-cols-3 !items-center !h-full !w-full !px-8'>
-        <div className='!justify-self-start'>
-          <Link
-            href='/'
-            className='!flex !items-center !gap-3 !transition-transform !duration-300 !ease-in-out hover:!scale-105'
-            aria-label='Home'
-          >
-            <Image
-              src={theme === 'dark' ? '/transparent-logo.png' : '/light-logo.png'}
-              alt='Big Things'
-              width={48}
-              height={48}
-              priority
-            />
-            <span className='!text-xl !font-bold !text-[#0097d6] dark:!text-[#06b6d4] !whitespace-nowrap'>
-              Big Things
-            </span>
-          </Link>
-        </div>
+    <header className="sticky top-0 z-50 h-[80px] bg-[var(--color-surface)] backdrop-blur-md border-b border-[var(--color-border)] transition-all duration-300">
+      <div className="grid grid-cols-[auto_0rem_10rem] items-center max-w-[1120px] pr-8 h-full max-[480px]:px-4">
+        <Link
+          href="/"
+          className="justify-self-start flex items-center gap-3 transition-transform duration-300 hover:scale-105"
+          aria-label="Home"
+        >
+          <Image
+            src="/transparent-logo.png"
+            alt="Big Things"
+            width={48}
+            height={48}
+            priority
+          />
+          <span className="text-xl font-bold text-[#0098d7] whitespace-nowrap max-md:hidden">
+            Big Things
+          </span>
+        </Link>
 
-        <nav className='!justify-self-center' aria-label='Main navigation'>
-          <ul className='!flex !items-center !gap-10'>
+        <nav className="justify-self-center" aria-label="Main navigation">
+          <ul className="flex list-none gap-10 justify-center max-md:gap-6">
             <li>
-              <Link href='/' className={navLinkClasses}>
-                Home
-              </Link>
+              <Link href="/" className={NAV_LINK}>Home</Link>
             </li>
 
-            <li className='!relative group'>
-              <div className={`${navLinkClasses} !cursor-pointer`}>About</div>
-              <ul className={dropdownMenuClasses}>
-                <li>
-                  <Link href='/about/who-we-are' className={dropdownItemClasses}>
-                    Who We Are
-                  </Link>
-                </li>
-                <li>
-                  <Link href='/about/team' className={dropdownItemClasses}>
-                    Our Team
-                  </Link>
-                </li>
-                <li>
-                  <Link href='/about/careers' className={dropdownItemClasses}>
-                    Careers
-                  </Link>
-                </li>
+            <li className="group relative flex flex-col items-center">
+              <button className={NAV_LINK} type="button">About</button>
+              <ul className={DROPDOWN_MENU}>
+                <li><Link href="/about/who-we-are" className={DROPDOWN_LINK}>Who We Are</Link></li>
+                <li><Link href="/about/team" className={DROPDOWN_LINK}>Our Team</Link></li>
+                <li><Link href="/about/careers" className={DROPDOWN_LINK}>Careers</Link></li>
               </ul>
             </li>
 
-            <li className='!relative group'>
-              <div className={`${navLinkClasses} !cursor-pointer`}>Services</div>
-              <ul className={dropdownMenuClasses}>
-                <li>
-                  <Link href='/services/design' className={dropdownItemClasses}>
-                    Design
-                  </Link>
-                </li>
-                <li>
-                  <Link href='/services/development' className={dropdownItemClasses}>
-                    Development
-                  </Link>
-                </li>
-                <li>
-                  <Link href='/services/marketing' className={dropdownItemClasses}>
-                    Marketing
-                  </Link>
-                </li>
+            <li className="group relative flex flex-col items-center">
+              <button className={NAV_LINK} type="button">Services</button>
+              <ul className={DROPDOWN_MENU}>
+                <li><Link href="/services/design" className={DROPDOWN_LINK}>Design</Link></li>
+                <li><Link href="/services/development" className={DROPDOWN_LINK}>Development</Link></li>
+                <li><Link href="/services/marketing" className={DROPDOWN_LINK}>Marketing</Link></li>
               </ul>
             </li>
 
             <li>
-              <Link href='/events' className={navLinkClasses}>
-                Events
-              </Link>
+              <Link href="/events" className={NAV_LINK}>Events</Link>
             </li>
-
             <li>
-              <Link href='/images' className={navLinkClasses}>
-                Images
-              </Link>
+              <Link href="/images" className={NAV_LINK}>Images</Link>
             </li>
-
             <li>
-              <Link
-                href='/donate'
-                className={`${navLinkClasses} header__nav-link--highlight`}
-              >
-                Donate
-              </Link>
+              <Link href="/donate" className={NAV_LINK}>Donate</Link>
             </li>
-
             <li>
-              <Link href='/contact' className={navLinkClasses}>
-                Contact
-              </Link>
+              <Link href="/contact" className={NAV_LINK}>Contact</Link>
             </li>
           </ul>
         </nav>
-
-        <div className='!justify-self-end'></div>
       </div>
     </header>
   );

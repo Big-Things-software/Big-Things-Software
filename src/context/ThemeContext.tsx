@@ -18,27 +18,26 @@ const ThemeCtx = createContext<{
 
 export function ThemeProvider({ children }: { children: ReactNode }) {
   const [theme, setTheme] = useState<Theme>("light");
-  const [ready, setReady] = useState(false);
+  const [hydrated, setHydrated] = useState(false);
 
+  /* Sync React state from the class the blocking <script> already set. */
   useEffect(() => {
-    const saved = localStorage.getItem("bts-theme") as Theme | null;
-    const prefersDark = matchMedia("(prefers-color-scheme: dark)").matches;
-    setTheme(saved ?? (prefersDark ? "dark" : "light"));
-    setReady(true);
+    const isDark = document.documentElement.classList.contains("dark");
+    setTheme(isDark ? "dark" : "light");
+    setHydrated(true);
   }, []);
 
+  /* After hydration, keep DOM + localStorage in sync with state. */
   useEffect(() => {
-    if (!ready) return;
+    if (!hydrated) return;
     document.documentElement.classList.toggle("dark", theme === "dark");
     localStorage.setItem("bts-theme", theme);
-  }, [theme, ready]);
+  }, [theme, hydrated]);
 
   const toggleTheme = useCallback(
     () => setTheme((t) => (t === "light" ? "dark" : "light")),
     []
   );
-
-  if (!ready) return null;
 
   return (
     <ThemeCtx.Provider value={{ theme, toggleTheme }}>

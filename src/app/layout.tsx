@@ -18,7 +18,7 @@ export const metadata: Metadata = {
   description:
     "A nonprofit empowering open-source innovation through funding, freelancing, product exposure, and integration tools.",
   icons: {
-    icon: "/favicon.png", // This tells Next.js to use your PNG favicon
+    icon: "/favicon.png",
   },
 };
 
@@ -28,9 +28,9 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" suppressHydrationWarning>
+    <html lang="en" className="dark">
       <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
+        className={`${geistSans.variable} ${geistMono.variable} antialiased flex flex-col min-h-screen`}
       >
         <ClientShell>{children}</ClientShell>
       </body>

@@ -1,6 +1,10 @@
 "use client";
 
 import { useState, type FormEvent } from "react";
+import { HEADING, SECTION_DESC, BTN_PRIMARY } from "@/lib/styles";
+
+const INPUT =
+  "py-4 px-5 text-base border border-[var(--color-border)] rounded-[10px] bg-[var(--color-surface)] backdrop-blur-sm text-[var(--color-text)] transition-all duration-300 placeholder:text-[var(--color-text-muted)] placeholder:opacity-60 focus:outline-none focus:border-[var(--color-accent)] focus:shadow-[0_0_0_3px_var(--color-accent-glow)]";
 
 export default function ContactPage() {
   const [name, setName] = useState("");
@@ -33,66 +37,75 @@ export default function ContactPage() {
   }
 
   return (
-    <section className="section">
-      <div className="section__inner section__inner--narrow">
-        <h1 className="section__heading">Get In Touch</h1>
-        <p className="section__description">
+    <section className="py-20 px-8 relative max-[480px]:py-12 max-[480px]:px-4">
+      <div className="max-w-[720px] mx-auto relative z-[1]">
+        <h1 className={HEADING}>Get In Touch</h1>
+        <p className={SECTION_DESC}>
           Interested in joining our team or collaborating? Drop us a message and
           we&apos;ll get back to you.
         </p>
 
-        <form onSubmit={submit} className="contact-form">
-          <label className="form-field">
-            <span className="form-field__label">Name</span>
+        <form
+          onSubmit={submit}
+          className="flex flex-col gap-6 p-12 bg-[var(--color-surface)] backdrop-blur-xl border border-[var(--color-border)] rounded-2xl max-md:p-8"
+        >
+          <label className="flex flex-col gap-2">
+            <span className="text-[15px] font-semibold text-[var(--color-text)]">
+              Name
+            </span>
             <input
               type="text"
               required
               value={name}
               onChange={(e) => setName(e.target.value)}
-              className="form-field__input"
+              className={INPUT}
               placeholder="Your name"
             />
           </label>
 
-          <label className="form-field">
-            <span className="form-field__label">Email</span>
+          <label className="flex flex-col gap-2">
+            <span className="text-[15px] font-semibold text-[var(--color-text)]">
+              Email
+            </span>
             <input
               type="email"
               required
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              className="form-field__input"
+              className={INPUT}
               placeholder="you@example.com"
             />
           </label>
 
-          <label className="form-field">
-            <span className="form-field__label">Message</span>
+          <label className="flex flex-col gap-2">
+            <span className="text-[15px] font-semibold text-[var(--color-text)]">
+              Message
+            </span>
             <textarea
               required
               rows={5}
               value={message}
               onChange={(e) => setMessage(e.target.value)}
-              className="form-field__input form-field__input--textarea"
+              className={`${INPUT} resize-y min-h-[140px]`}
               placeholder="Tell us how you'd like to contribute..."
             />
           </label>
 
           <button
             type="submit"
-            className="btn btn--primary btn--full"
+            className={`${BTN_PRIMARY} w-full`}
             disabled={sending}
           >
             {sending ? "Sending\u2026" : "Send Message"}
           </button>
 
           {feedback === "ok" && (
-            <p className="form-status form-status--success">
+            <p className="text-[15px] font-medium text-center p-4 rounded-lg bg-emerald-500/10 text-emerald-500 border border-emerald-500/30">
               Thanks! We&apos;ll be in touch soon.
             </p>
           )}
           {feedback === "fail" && (
-            <p className="form-status form-status--error">
+            <p className="text-[15px] font-medium text-center p-4 rounded-lg bg-red-500/10 text-red-500 border border-red-500/30">
               Something went wrong. Please try again.
             </p>
           )}

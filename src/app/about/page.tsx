@@ -3,6 +3,10 @@
 import { useState } from "react";
 import type { ReactNode } from "react";
 import Image from "next/image";
+import { HEADING, SECTION_DESC, DIVIDER } from "@/lib/styles";
+
+const ACCORDION_BASE =
+  "bg-[var(--color-surface)] backdrop-blur-xl border rounded-2xl overflow-hidden transition-all duration-300";
 
 function AccordionItem({
   number,
@@ -18,17 +22,27 @@ function AccordionItem({
   const [open, setOpen] = useState(false);
 
   return (
-    <div className={`accordion-item${open ? " accordion-item--open" : ""}`}>
+    <div
+      className={`${ACCORDION_BASE} ${
+        open
+          ? "border-[var(--color-accent)] shadow-[0_8px_24px_var(--color-shadow)]"
+          : "border-[var(--color-border)]"
+      }`}
+    >
       <button
-        className="accordion-trigger"
-        onClick={() => setOpen(o => !o)}
+        className="w-full flex items-center gap-4 py-6 px-8 bg-transparent border-none cursor-pointer text-left text-[var(--color-text)] transition-colors duration-300 hover:text-[var(--color-accent)]"
+        onClick={() => setOpen((o) => !o)}
         aria-expanded={open}
         type="button"
       >
-        <span className="accordion-number">{number}</span>
-        <span className="accordion-title">{title}</span>
+        <span className="shrink-0 w-9 h-9 bg-gradient-to-br from-[var(--color-accent)] to-cyan-500 text-white rounded-full flex items-center justify-center text-base font-bold shadow-[0_4px_12px_var(--color-accent-glow)]">
+          {number}
+        </span>
+        <span className="flex-1 text-[17px] font-semibold">{title}</span>
         <svg
-          className="accordion-chevron"
+          className={`shrink-0 text-[var(--color-text-muted)] transition-all duration-300 ${
+            open ? "rotate-180 text-[var(--color-accent)]" : ""
+          }`}
           width="20"
           height="20"
           viewBox="0 0 24 24"
@@ -43,8 +57,10 @@ function AccordionItem({
         </svg>
       </button>
       {open && (
-        <div className="accordion-body">
-          <p className="accordion-summary">{summary}</p>
+        <div className="px-8 pb-6 pl-[84px] text-[var(--color-text-muted)] text-base leading-relaxed flex flex-col gap-3">
+          <p className="text-[15px] font-semibold text-[var(--color-accent)]">
+            {summary}
+          </p>
           {children}
         </div>
       )}
@@ -55,24 +71,24 @@ function AccordionItem({
 export default function AboutPage() {
   return (
     <>
-      <section className="section">
-        <div className="section__inner section__inner--narrow">
-          <h1 className="section__heading">About Us</h1>
-          <div className="about-hero">
+      <section className="py-20 px-8 relative max-[480px]:py-12 max-[480px]:px-4">
+        <div className="max-w-[720px] mx-auto relative z-[1]">
+          <h1 className={HEADING}>About Us</h1>
+          <div className="flex items-start gap-12 mb-12 p-12 bg-[var(--color-surface)] backdrop-blur-xl border border-[var(--color-border)] rounded-2xl max-md:flex-col max-md:items-center max-md:text-center max-md:p-8">
             <Image
               src="/normal-logo.png"
               alt="Big Things Software"
               width={160}
               height={160}
-              className="about-hero__logo"
+              className="shrink-0"
             />
             <div>
-              <p className="about-hero__text">
+              <p className="text-lg leading-loose text-[var(--color-text-muted)] mb-5">
                 Big Things Software is a nonprofit dedicated to empowering
                 open-source innovation through providing tools for funding,
                 freelancing, product exposure, and product integration.
               </p>
-              <p className="about-hero__text">
+              <p className="text-lg leading-loose text-[var(--color-text-muted)] mb-5">
                 We aim to refine the development processes of high-quality
                 developers for the public, free of charge.
               </p>
@@ -81,16 +97,16 @@ export default function AboutPage() {
         </div>
       </section>
 
-      <hr className="section-divider" />
+      <hr className={DIVIDER} />
 
-      <section className="section section--alt">
-        <div className="section__inner section__inner--narrow">
-          <h2 className="section__heading">Our Presentation</h2>
-          <p className="section__description">
+      <section className="py-20 px-8 relative max-[480px]:py-12 max-[480px]:px-4">
+        <div className="max-w-[720px] mx-auto relative z-[1]">
+          <h2 className={HEADING}>Our Presentation</h2>
+          <p className={SECTION_DESC}>
             Our dedicated team has synthesized a presentation to address our
             mission. Select any item below to learn more:
           </p>
-          <div className="accordion">
+          <div className="flex flex-col gap-3">
             <AccordionItem
               number={1}
               title="The Problem"
