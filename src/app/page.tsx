@@ -1,10 +1,18 @@
-﻿"use client";
+﻿
+"use client";
 
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useCallback } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { motion } from "framer-motion";
-import { DIVIDER, BTN_PRIMARY, BTN_OUTLINE } from "@/lib/styles";
+import { motion, AnimatePresence } from "framer-motion";
+
+// Style constants
+const DIVIDER = "border-0 h-px bg-gradient-to-r from-transparent via-cyan-500/50 to-transparent my-0";
+const BTN_PRIMARY = "inline-flex items-center justify-center px-6 py-3 rounded-lg bg-gradient-to-r from-cyan-500 to-cyan-600 text-white font-semibold transition-all duration-300 hover:from-cyan-400 hover:to-cyan-500 hover:shadow-[0_0_20px_rgba(6,182,212,0.5)]";
+const BTN_OUTLINE = "inline-flex items-center justify-center px-6 py-3 rounded-lg border border-white/20 text-white font-semibold transition-all duration-300 hover:bg-white/10 hover:border-white/40";
+
+const PILLAR_CARD =
+  "backdrop-blur-xl rounded-2xl p-10 transition-all duration-300 relative overflow-hidden bg-white/5 border border-white/10 before:absolute before:top-0 before:left-0 before:right-0 before:h-[3px] before:bg-gradient-to-r before:from-cyan-400 before:to-cyan-500 before:scale-x-0 before:origin-left before:transition-transform before:duration-300 hover:before:scale-x-100 hover:border-cyan-400 hover:-translate-y-2 hover:shadow-[0_12px_40px_rgba(0,0,0,0.3),0_0_20px_rgba(6,182,212,0.3)]";
 
 interface Particle {
   x: number;
@@ -20,9 +28,6 @@ const CONNECT_DISTANCE = 250;
 const GLOW_DISTANCE = 120;
 const BOOT_DELAY_MS = 2500;
 const SCRAMBLE_CHARS = "!<>-_\\/[]{}=+*^?#________";
-
-const PILLAR_CARD =
-  "backdrop-blur-xl rounded-2xl p-10 transition-all duration-300 relative overflow-hidden bg-white/5 border border-white/10 before:absolute before:top-0 before:left-0 before:right-0 before:h-[3px] before:bg-gradient-to-r before:from-cyan-400 before:to-cyan-500 before:scale-x-0 before:origin-left before:transition-transform before:duration-300 hover:before:scale-x-100 hover:border-cyan-400 hover:-translate-y-2 hover:shadow-[0_12px_40px_rgba(0,0,0,0.3),0_0_20px_rgba(6,182,212,0.3)]";
 
 function InteractiveNetwork({ active }: { active: boolean }) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -171,63 +176,109 @@ function ScrambleText({ text, active, onComplete }: { text: string; active: bool
 }
 
 export default function Home() {
-  const [booted, setBooted] = useState(false);
-  const [revealed, setRevealed] = useState(false);
+  const [bootPhase, setBootPhase] = useState("loading");
+  const [contentReady, setContentReady] = useState(false);
+  const [textDecrypted, setTextDecrypted] = useState(false);
 
   useEffect(() => {
-    const t = setTimeout(() => setBooted(true), BOOT_DELAY_MS);
-    return () => clearTimeout(t);
+    const timer = setTimeout(() => setBootPhase("active"), BOOT_DELAY_MS);
+    return () => clearTimeout(timer);
   }, []);
+
+  // Delay content appearance until logo animation completes
+  useEffect(() => {
+    if (bootPhase === "active") {
+      const timer = setTimeout(() => setContentReady(true), 1200);
+      return () => clearTimeout(timer);
+    }
+  }, [bootPhase]);
+
+  const onScrambleComplete = useCallback(() => {
+    setTextDecrypted(true);
+  }, []);
+
+  const isActive = bootPhase === "active";
+  const logoTransition = { duration: 1.2, ease: [0.6, 0.01, -0.05, 0.9] };
 
   return (
     <>
       <section className="relative h-screen overflow-hidden">
-        <InteractiveNetwork active={booted} />
+        <InteractiveNetwork active={isActive} />
         
-        <div className={`relative z-10 h-full flex items-center transition-all duration-[1200ms] ease-[cubic-bezier(0.8,0,0.2,1)] ${booted ? "justify-start" : "justify-center"}`}>
-          
-          {!booted && (
-            <div className="transition-opacity duration-300">
-              <Image
-                src="/animated-logo.svg"
-                alt="Big Things Software"
-                width={240}
-                height={240}
-                priority
-              />
-            </div>
-          )}
+        <div className="relative z-10 h-full flex items-center justify-center">
+          {/* Hero container - always rendered but positioned differently */}
+          <div className={`absolute left-0 flex items-center pl-[5%] pr-12 !pb-5 pointer-events-none transition-opacity duration-500 ${isActive ? 'opacity-100' : 'opacity-0'}`}>
+            <motion.div
+              className="absolute inset-0 bg-white/5 backdrop-blur-[60px] border-y border-r border-white/10 rounded-r-lg"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: contentReady ? 1 : 0 }}
+              transition={{ duration: 0.7, ease: 'easeIn' }}
+            />
+            
+            {/* Placeholder for layout - invisible but takes space */}
+            <div className="relative w-[280px] h-[280px]" />
+            
+            <motion.div
+                className="relative ml-12 max-w-2xl py-16"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: contentReady ? 1 : 0 }}
+                transition={{ duration: 0.8, ease: 'easeIn', delay: 0.1 }}
+            >
+              <div className={contentReady ? 'pointer-events-auto' : ''}>
+                <h1 className="text-white text-4xl lg:text-6xl font-black leading-none !py-3 uppercase tracking-tighter italic">
+                  <ScrambleText text="SHAPING THE FUTURE OF OPEN SOURCE" active={contentReady} onComplete={onScrambleComplete} />
+                </h1>
+                <motion.div
+                    initial={{ opacity: 0, y: 5 }}
+                    animate={{ 
+                      opacity: textDecrypted ? 1 : 0, 
+                      y: textDecrypted ? 0 : 5 
+                    }}
+                    transition={{ duration: 0.8, ease: [0.8, 0, 0.2, 1], delay: 0.2 }}
+                >
+                  <p className="text-lg text-slate-400 leading-relaxed !py-3 font-light">
+                    We aren&apos;t just a nonprofit; we&apos;re an incubator for impact. 
+                    Bridging the gap between elite talent and the capital needed to 
+                    build tools that change the world.
+                  </p>
+                  <div className="flex gap-4 !py-3">
+                    <Link href="/about" className={BTN_PRIMARY}>Learn More</Link>
+                    <Link href="/contact" className={BTN_OUTLINE}>Get In Touch</Link>
+                  </div>
+                </motion.div>
+              </div>
+            </motion.div>
+          </div>
 
-          <div className={`absolute left-0 flex items-center bg-white/5 backdrop-blur-[60px] border-y border-r border-white/10 rounded-r-lg pl-[5%] pr-12 !pb-5 transition-all duration-1000 ease-[cubic-bezier(0.8,0,0.2,1)] ${booted ? "opacity-100" : "opacity-0 -translate-x-10 pointer-events-none"}`}>
+          {/* Single animated logo that moves from center to hero position */}
+          <motion.div
+            className="absolute z-20"
+            initial={false}
+            animate={{
+              x: isActive ? "calc(-50vw + 5% + 140px + 2rem)" : 0,
+              y: 0,
+              scale: isActive ? 280/480 : 1,
+            }}
+            transition={logoTransition}
+          >
             <Image
-              src="/transparent-logo.png"
+              src="/animated-logo.svg"
               alt="Big Things Software"
-              width={240}
-              height={240}
+              width={480}
+              height={480}
               priority
             />
-            <div className="ml-12 max-w-2xl py-16">
-              <h1 className="text-white text-4xl lg:text-6xl font-black leading-none !py-3 uppercase tracking-tighter italic">
-                <ScrambleText text="SHAPING THE FUTURE OF OPEN SOURCE" active={booted} onComplete={() => setRevealed(true)} />
-              </h1>
-              <div className={`transition-all duration-1000 ease-[cubic-bezier(0.8,0,0.2,1)] delay-500 ${revealed ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-5 pointer-events-none'}`}>
-                <p className="text-lg text-slate-400 leading-relaxed !py-3 font-light">
-                  We aren't just a nonprofit; we're an incubator for impact. 
-                  Bridging the gap between elite talent and the capital needed to 
-                  build tools that change the world.
-                </p>
-                <div className="flex gap-4 !py-3">
-                  <Link href="/about" className={BTN_PRIMARY}>Learn More</Link>
-                  <Link href="/contact" className={BTN_OUTLINE}>Get In Touch</Link>
-                </div>
-              </div>
-            </div>
-          </div>
+          </motion.div>
         </div>
       </section>
 
-      {booted && (
-        <div className="relative z-10 bg-[#020617] transition-opacity duration-1000 ease-in-out">
+      {isActive && (
+        <motion.div 
+          className="relative z-10 bg-[#020617]"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ duration: 1, ease: 'easeIn' }}
+        >
           <hr className={DIVIDER} />
           <section className="py-20 px-8 relative max-[480px]:py-12 max-[480px]:px-4">
             <div className="max-w-[1120px] mx-auto relative z-[1]">
@@ -268,8 +319,9 @@ export default function Home() {
               <Link href="/contact" className={BTN_PRIMARY}>Join Us</Link>
             </div>
           </section>
-        </div>
+        </motion.div>
       )}
     </>
   );
 }
+
