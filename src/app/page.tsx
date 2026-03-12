@@ -4,7 +4,7 @@
 import { useState, useEffect, useRef, useCallback } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion, useInView } from "framer-motion";
 
 // Style constants
 const DIVIDER = "border-0 h-px bg-gradient-to-r from-transparent via-cyan-500/50 to-transparent my-0";
@@ -13,6 +13,93 @@ const BTN_OUTLINE = "inline-flex items-center justify-center px-6 py-3 rounded-l
 
 const PILLAR_CARD =
   "backdrop-blur-xl rounded-2xl p-10 transition-all duration-300 relative overflow-hidden bg-white/5 border border-white/10 before:absolute before:top-0 before:left-0 before:right-0 before:h-[3px] before:bg-gradient-to-r before:from-cyan-400 before:to-cyan-500 before:scale-x-0 before:origin-left before:transition-transform before:duration-300 hover:before:scale-x-100 hover:border-cyan-400 hover:-translate-y-2 hover:shadow-[0_12px_40px_rgba(0,0,0,0.3),0_0_20px_rgba(6,182,212,0.3)]";
+
+// Animation constants
+const ANIMATION_DURATION = 0.8;
+const ANIMATION_EASE = [0.6, 0.01, 0.05, 0.9] as const;
+const LOGO_TRANSITION_EASE = [0.6, 0.01, 0.05, 0.9] as const;
+const STAGGER_DELAY = 0.1;
+const SCROLL_THRESHOLD = 0.05;
+const SCROLL_MARGIN = "0px 0px -50px 0px";
+const SCRAMBLE_INTERVAL_MS = 30;
+const SCRAMBLE_ITERATION_STEP = 1 / 3;
+
+// Animation variants for different scroll effects
+const SCROLL_VARIANTS = {
+  fadeUp: {
+    initial: { opacity: 0, y: 60 },
+    animate: { opacity: 1, y: 0 }
+  },
+  fadeDown: {
+    initial: { opacity: 0, y: -60 },
+    animate: { opacity: 1, y: 0 }
+  },
+  fadeLeft: {
+    initial: { opacity: 0, x: -60 },
+    animate: { opacity: 1, x: 0 }
+  },
+  fadeRight: {
+    initial: { opacity: 0, x: 60 },
+    animate: { opacity: 1, x: 0 }
+  },
+  zoom: {
+    initial: { opacity: 0, scale: 0.8 },
+    animate: { opacity: 1, scale: 1 }
+  },
+  flip: {
+    initial: { opacity: 0, rotateY: 90 },
+    animate: { opacity: 1, rotateY: 0 }
+  }
+} as const;
+
+type AnimationType = keyof typeof SCROLL_VARIANTS;
+
+// Wrapper component for scroll animations
+interface AnimatedElementProps {
+  animationType: AnimationType;
+  children: React.ReactNode;
+  className?: string;
+  as?: keyof typeof motion;
+  delay?: number;
+  threshold?: number;
+  once?: boolean;
+}
+
+function AnimatedElement({
+  animationType,
+  children,
+  className = "",
+  as: Component = "div" as keyof typeof motion,
+  delay = 0,
+  threshold = SCROLL_THRESHOLD,
+  once = true
+}: AnimatedElementProps) {
+  const ref = useRef<HTMLElement>(null);
+  const isInView = useInView(ref, {
+    threshold,
+    once,
+    margin: SCROLL_MARGIN
+  });
+
+  const variant = SCROLL_VARIANTS[animationType];
+  const MotionComponent = motion[Component] as any;
+
+  return (
+    <MotionComponent
+      ref={ref}
+      className={className}
+      initial={variant.initial}
+      animate={isInView ? variant.animate : variant.initial}
+      transition={{
+        duration: ANIMATION_DURATION,
+        ease: ANIMATION_EASE,
+        delay: isInView ? delay : 0
+      }}
+    >
+      {children}
+    </MotionComponent>
+  );
+}
 
 interface Particle {
   x: number;
@@ -26,8 +113,9 @@ interface Particle {
 const NODE_COUNT = 50;
 const CONNECT_DISTANCE = 250;
 const GLOW_DISTANCE = 120;
-const BOOT_DELAY_MS = 2500;
-const SCRAMBLE_CHARS = "!<>-_\\/[]{}=+*^?#________";
+const BOOT_DELAY_MS = 2500;const CONTENT_READY_DELAY_MS = 1200;
+const LOGO_TRANSITION_DURATION = 1.2;
+const NETWORK_FADE_DURATION = 1;const SCRAMBLE_CHARS = "!<>-_\\/[]{}=+*^?#________";
 
 function InteractiveNetwork({ active }: { active: boolean }) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -131,7 +219,7 @@ function InteractiveNetwork({ active }: { active: boolean }) {
       className="absolute inset-0 z-0 bg-[#020617]"
       initial={{ opacity: 0 }}
       animate={{ opacity: active ? 1 : 0 }}
-      transition={{ duration: 1, ease: 'easeIn' }}
+      transition={{ duration: NETWORK_FADE_DURATION, ease: 'easeIn' }}
     >
       <canvas ref={canvasRef} className="block" />
     </motion.div>
@@ -166,8 +254,8 @@ function ScrambleText({ text, active, onComplete }: { text: string; active: bool
         hasCompleted.current = true;
         onCompleteRef.current?.();
       }
-      iteration += 1 / 3;
-    }, 30);
+      iteration += SCRAMBLE_ITERATION_STEP;
+    }, SCRAMBLE_INTERVAL_MS);
 
     return () => clearInterval(interval);
   }, [active, text]);
@@ -188,7 +276,7 @@ export default function Home() {
   // Delay content appearance until logo animation completes
   useEffect(() => {
     if (bootPhase === "active") {
-      const timer = setTimeout(() => setContentReady(true), 1200);
+      const timer = setTimeout(() => setContentReady(true), CONTENT_READY_DELAY_MS);
       return () => clearTimeout(timer);
     }
   }, [bootPhase]);
@@ -198,7 +286,7 @@ export default function Home() {
   }, []);
 
   const isActive = bootPhase === "active";
-  const logoTransition = { duration: 1.2, ease: [0.6, 0.01, -0.05, 0.9] };
+  const logoTransition = { duration: LOGO_TRANSITION_DURATION, ease: LOGO_TRANSITION_EASE };
 
   return (
     <>
@@ -275,36 +363,64 @@ export default function Home() {
       {isActive && (
         <motion.div 
           className="relative z-10 bg-[#020617]"
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ duration: 1, ease: 'easeIn' }}
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: ANIMATION_DURATION, ease: ANIMATION_EASE, delay: 0.3 }}
         >
           <hr className={DIVIDER} />
           <section className="py-20 px-8 relative max-[480px]:py-12 max-[480px]:px-4">
             <div className="max-w-[1120px] mx-auto relative z-[1]">
-              <h2 className="text-4xl font-extrabold mb-5 leading-tight bg-gradient-to-br from-white to-cyan-400 bg-clip-text text-transparent">What We Do</h2>
-              <p className="text-lg text-slate-400 leading-relaxed mb-10">
+              <AnimatedElement 
+                as="h2"
+                animationType="fadeDown"
+                className="text-4xl font-extrabold mb-5 leading-tight bg-gradient-to-br from-white to-cyan-400 bg-clip-text text-transparent"
+              >
+                What We Do
+              </AnimatedElement>
+              <AnimatedElement 
+                as="p"
+                animationType="fadeUp"
+                delay={STAGGER_DELAY}
+                className="text-lg text-slate-400 leading-relaxed mb-10"
+              >
                 We refine the development processes of high-quality developers for
                 the public, free of charge. Our tools bridge the gap between talent,
                 funding, and impact.
-              </p>
+              </AnimatedElement>
               <div className="grid grid-cols-[repeat(auto-fit,minmax(260px,1fr))] gap-8 mt-8">
-                <article className={PILLAR_CARD}>
-                  <h3 className="text-[22px] font-bold mb-3 text-sky-400">Funding</h3>
-                  <p className="text-base text-slate-400 leading-relaxed">Connecting open-source maintainers with sustainable funding so great software never goes unsupported.</p>
-                </article>
-                <article className={PILLAR_CARD}>
-                  <h3 className="text-[22px] font-bold mb-3 text-sky-400">Freelancing</h3>
-                  <p className="text-base text-slate-400 leading-relaxed">Giving skilled developers the tools and exposure to contribute to meaningful projects.</p>
-                </article>
-                <article className={PILLAR_CARD}>
-                  <h3 className="text-[22px] font-bold mb-3 text-sky-400">Product Exposure</h3>
-                  <p className="text-base text-slate-400 leading-relaxed">Amplifying visibility for open-source products so they reach the communities that need them.</p>
-                </article>
-                <article className={PILLAR_CARD}>
-                  <h3 className="text-[22px] font-bold mb-3 text-sky-400">Integration</h3>
-                  <p className="text-base text-slate-400 leading-relaxed">Reducing friction between open-source tools and the people who use them every day.</p>
-                </article>
+                {[
+                  {
+                    title: "Funding",
+                    description: "Connecting open-source maintainers with sustainable funding so great software never goes unsupported.",
+                    delay: STAGGER_DELAY * 2
+                  },
+                  {
+                    title: "Freelancing", 
+                    description: "Giving skilled developers the tools and exposure to contribute to meaningful projects.",
+                    delay: STAGGER_DELAY * 3
+                  },
+                  {
+                    title: "Product Exposure",
+                    description: "Amplifying visibility for open-source products so they reach the communities that need them.",
+                    delay: STAGGER_DELAY * 4
+                  },
+                  {
+                    title: "Integration",
+                    description: "Reducing friction between open-source tools and the people who use them every day.",
+                    delay: STAGGER_DELAY * 5
+                  }
+                ].map((pillar) => (
+                  <AnimatedElement 
+                    key={pillar.title}
+                    as="article"
+                    animationType="fadeUp"
+                    delay={pillar.delay}
+                    className={PILLAR_CARD}
+                  >
+                    <h3 className="text-[22px] font-bold mb-3 text-sky-400">{pillar.title}</h3>
+                    <p className="text-base text-slate-400 leading-relaxed">{pillar.description}</p>
+                  </AnimatedElement>
+                ))}
               </div>
             </div>
           </section>
@@ -314,9 +430,27 @@ export default function Home() {
           <section className="py-20 px-8 relative bg-gradient-to-br from-cyan-500/10 to-emerald-500/10 max-[480px]:py-12 max-[480px]:px-4">
             <div className="absolute inset-0 bg-[radial-gradient(circle_at_30%_50%,rgba(6,182,212,0.6),transparent_60%)] opacity-30 pointer-events-none" />
             <div className="max-w-[1120px] mx-auto relative z-[1] text-center">
-              <h2 className="text-4xl font-extrabold mb-5 leading-tight bg-gradient-to-br from-white to-cyan-400 bg-clip-text text-transparent">Our Team Could Feature You</h2>
-              <p className="text-lg text-slate-400 leading-relaxed mb-10">We&apos;re always looking for passionate developers, designers, and advocates to join our mission.</p>
-              <Link href="/contact" className={BTN_PRIMARY}>Join Us</Link>
+              <AnimatedElement 
+                as="h2"
+                animationType="zoom"
+                className="text-4xl font-extrabold mb-5 leading-tight bg-gradient-to-br from-white to-cyan-400 bg-clip-text text-transparent"
+              >
+                Our Team Could Feature You
+              </AnimatedElement>
+              <AnimatedElement 
+                as="p"
+                animationType="fadeUp"
+                delay={STAGGER_DELAY}
+                className="text-lg text-slate-400 leading-relaxed mb-10"
+              >
+                We&apos;re always looking for passionate developers, designers, and advocates to join our mission.
+              </AnimatedElement>
+              <AnimatedElement 
+                animationType="fadeUp"
+                delay={STAGGER_DELAY * 2}
+              >
+                <Link href="/contact" className={BTN_PRIMARY}>Join Us</Link>
+              </AnimatedElement>
             </div>
           </section>
         </motion.div>
