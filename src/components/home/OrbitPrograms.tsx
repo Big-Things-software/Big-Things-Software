@@ -113,7 +113,7 @@ export default function OrbitPrograms() {
     <section
       id="programs"
       aria-labelledby="programs-h"
-      className="relative overflow-clip py-[clamp(5rem,11vw,9rem)]"
+      className="relative isolate overflow-clip py-[clamp(5rem,11vw,9rem)]"
     >
       {/* the stage holds while the page scrolls a further screen and a half */}
       <div ref={trackRef} className={pinned ? "h-[250vh]" : ""}>
@@ -123,16 +123,24 @@ export default function OrbitPrograms() {
           }
         >
           <div className="mx-auto w-full max-w-[1120px] px-[clamp(1.25rem,5vw,2.5rem)]">
-            <DecodedEyebrow rule text="Programs" />
-            <h2
-              id="programs-h"
-              className="m-0 mb-[clamp(1.6rem,3vw,2.4rem)] max-w-[18ch] font-[family-name:var(--font-montserrat)] text-[clamp(1.9rem,4.2vw,3rem)] leading-[1.05] font-bold tracking-[-0.015em]"
-            >
-              Bring something you&apos;re building. We do the rest.
-            </h2>
+            {/* eyebrow + heading get an explicit positive z-index so they
+               always paint above the orbit graphic below, regardless of
+               DOM order or the orbit wrapper's own stacking context */}
+            <div className="relative z-10">
+              <DecodedEyebrow rule text="Programs" />
+              <h2
+                id="programs-h"
+                className="m-0 mb-[clamp(1.6rem,3vw,2.4rem)] max-w-[18ch] font-[family-name:var(--font-montserrat)] text-[clamp(1.9rem,4.2vw,3rem)] leading-[1.05] font-bold tracking-[-0.015em]"
+              >
+                Bring something you&apos;re building. We do the rest.
+              </h2>
+            </div>
 
             <div className="relative">
-              {/* the logo's motif at page scale: an orbit passing behind the steps */}
+              {/* the logo's motif at page scale: an orbit passing behind the steps.
+                 Negative z-index pins it to the back of this section's isolated
+                 stacking context (see `isolate` on the <section>), so it can
+                 never paint above the heading or step cards. */}
               <motion.svg
                 ref={orbitRef}
                 style={{
@@ -148,7 +156,7 @@ export default function OrbitPrograms() {
                   maskImage:
                     "linear-gradient(90deg, transparent, #000 14%, #000 86%, transparent)",
                 }}
-                className="pointer-events-none absolute z-0 [&_ellipse]:opacity-60 [&>circle]:[filter:drop-shadow(0_0_8px_rgba(111,195,232,0.9))]"
+                className="pointer-events-none absolute -z-10 [&_ellipse]:opacity-60 [&>circle]:[filter:drop-shadow(0_0_8px_rgba(111,195,232,0.9))]"
                 viewBox="0 0 1200 460"
                 preserveAspectRatio="none"
                 aria-hidden="true"
@@ -204,7 +212,7 @@ export default function OrbitPrograms() {
                 )}
               </motion.svg>
 
-              <ol className="relative z-1 m-0 grid list-none grid-cols-[repeat(auto-fit,minmax(200px,1fr))] gap-[clamp(1rem,2vw,1.4rem)] p-0">
+              <ol className="relative z-10 m-0 grid list-none grid-cols-[repeat(auto-fit,minmax(200px,1fr))] gap-[clamp(1rem,2vw,1.4rem)] p-0">
                 {STEPS.map((step, i) =>
                   pinned ? (
                     <PinnedStep
