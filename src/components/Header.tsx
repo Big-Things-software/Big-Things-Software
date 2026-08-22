@@ -18,7 +18,6 @@ const NAV_LINKS = [
 export default function Header() {
   const [scrolled, setScrolled] = useState(false);
   const progressRef = useRef<HTMLDivElement>(null);
-  const markRef = useRef<HTMLSpanElement>(null);
 
   useEffect(() => {
     let ticking = false;
@@ -33,9 +32,6 @@ export default function Header() {
       const sp = max > 0 ? y / max : 0;
       if (progressRef.current) {
         progressRef.current.style.transform = `scaleX(${sp.toFixed(4)})`;
-      }
-      if (markRef.current) {
-        markRef.current.style.transform = `rotate(${(sp * 220).toFixed(1)}deg)`;
       }
     };
 
@@ -73,7 +69,6 @@ export default function Header() {
           aria-label="Big Things — back to top"
         >
           <span
-            ref={markRef}
             className={`block transition-[width,height] duration-300 ${
               scrolled ? "size-[22px]" : "size-7"
             }`}
