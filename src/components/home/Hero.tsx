@@ -1,5 +1,6 @@
 "use client";
 
+import { Fragment } from "react";
 import {
   motion,
   useMotionTemplate,
@@ -88,7 +89,7 @@ export default function Hero() {
       >
         {/* the animated mark swaps for its static twin when motion is reduced */}
         <Image
-          src="/images/animated-logo.svg"
+          src="/animated-logo.svg"
           alt=""
           width={168}
           height={168}
@@ -135,7 +136,10 @@ export default function Hero() {
         </span>
       </motion.h1>
 
-      {/* the lede assembles word by word under the wordmark */}
+      {/* the lede assembles word by word under the wordmark. Each word is its
+         own animated inline-block box; the space between words is rendered
+         as a plain sibling text node (not trailing content inside a word's
+         box) so it can't get collapsed away at the box's edge. */}
       <p className="relative z-1 m-0 mb-[clamp(2rem,4vw,2.8rem)] max-w-[470px] text-[clamp(0.98rem,1.6vw,1.15rem)] leading-[1.55] text-white/72">
         <span className="sr-only">
           We provide exposure and support for community-centric software and app development. We
@@ -143,23 +147,25 @@ export default function Hero() {
         </span>
         <span aria-hidden="true">
           {words.map((word, i) => (
-            <motion.span
-              key={`${word}-${i}`}
-              className={
-                word === "big."
-                  ? "inline-block font-semibold text-[#f2f6f9]"
-                  : "inline-block"
-              }
-              initial={reduced ? false : { opacity: 0, y: "0.6em", filter: "blur(4px)" }}
-              animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
-              transition={{
-                duration: 0.7,
-                ease: [0.2, 0.7, 0.2, 1],
-                delay: reduced ? 0 : 1 + i * 0.028,
-              }}
-            >
-              {word}{" "}
-            </motion.span>
+            <Fragment key={`${word}-${i}`}>
+              <motion.span
+                className={
+                  word === "big."
+                    ? "inline-block font-semibold text-[#f2f6f9]"
+                    : "inline-block"
+                }
+                initial={reduced ? false : { opacity: 0, y: "0.6em", filter: "blur(4px)" }}
+                animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
+                transition={{
+                  duration: 0.7,
+                  ease: [0.2, 0.7, 0.2, 1],
+                  delay: reduced ? 0 : 1 + i * 0.028,
+                }}
+              >
+                {word}
+              </motion.span>
+              {i < words.length - 1 ? " " : null}
+            </Fragment>
           ))}
         </span>
       </p>
