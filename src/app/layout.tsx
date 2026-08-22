@@ -34,7 +34,7 @@ export const metadata: Metadata = {
     "Big Things is a nonprofit giving community-centric software and app development the exposure and support it needs. Bring a project, volunteer, or amplify one.",
   manifest: "/site.webmanifest",
   icons: {
-    icon: [{ url: "/images/favicon.svg", type: "image/svg+xml" }],
+    icon: [{ url: "/favicon.png", type: "image/svg+xml" }],
     apple: "/images/apple-touch-icon.png",
   },
   openGraph: {
@@ -50,7 +50,7 @@ export const metadata: Metadata = {
         type: "image/jpeg",
         width: 1200,
         height: 630,
-        alt: "Big Things — now open",
+        alt: "Big Things",
       },
     ],
   },

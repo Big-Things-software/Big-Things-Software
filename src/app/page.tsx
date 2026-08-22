@@ -107,155 +107,174 @@ export default function Home() {
 
       <Hero />
 
-      {/* WHAT WE DO */}
-      <section id="mission" aria-labelledby="mission-h" className="relative py-[clamp(5rem,11vw,9rem)]">
-        <div className="mx-auto w-full max-w-[1120px] px-[clamp(1.25rem,5vw,2.5rem)]">
-          <DecodedEyebrow rule text="Our mission" />
-          <Reveal>
-            <h2
-              id="mission-h"
-              className="m-0 mb-[clamp(1.6rem,3vw,2.4rem)] max-w-[18ch] font-[family-name:var(--font-montserrat)] text-[clamp(1.9rem,4.2vw,3rem)] leading-[1.05] font-bold tracking-[-0.015em]"
-            >
-              Three things, for people building for their own community.
-            </h2>
-          </Reveal>
+      {/* everything below the hero sits on one continuous dark/tech shell */}
+      <div className="relative bg-[#05080d]">
+        {/* faint grid + soft glow layer — purely decorative, sits behind all content */}
+        <div
+          aria-hidden="true"
+          className="pointer-events-none absolute inset-0 z-0 opacity-60 [background-image:linear-gradient(rgba(47,137,197,0.06)_1px,transparent_1px),linear-gradient(90deg,rgba(47,137,197,0.06)_1px,transparent_1px)] [background-size:64px_64px] [mask-image:radial-gradient(ellipse_80%_60%_at_50%_0%,black_40%,transparent_100%)]"
+        />
+        <div
+          aria-hidden="true"
+          className="pointer-events-none absolute left-1/2 top-0 z-0 h-[600px] w-[900px] -translate-x-1/2 -translate-y-1/3 rounded-full bg-[#2f89c5]/12 blur-[120px]"
+        />
+        <div
+          aria-hidden="true"
+          className="pointer-events-none absolute right-0 bottom-0 z-0 h-[500px] w-[500px] translate-x-1/3 translate-y-1/3 rounded-full bg-[#2f89c5]/8 blur-[140px]"
+        />
 
-          <div className="grid grid-cols-[repeat(auto-fit,minmax(200px,1fr))] gap-[clamp(1rem,2vw,1.4rem)]">
-            {MISSION_CARDS.map((card, i) => (
-              <Reveal key={card.title} delay={i * 0.1}>
-                <TiltCard className="h-full">
-                  <h3 className="m-0 mb-[0.6rem] font-[family-name:var(--font-montserrat)] text-[1.15rem] font-bold tracking-[-0.005em] text-[#f2f6f9]">
-                    {card.title}
-                  </h3>
-                  <p className="m-0 text-[0.97rem] text-[#9fb2c4]">{card.body}</p>
-                </TiltCard>
+        {/* everything below needs to sit above the background layers */}
+        <div className="relative z-10">
+          {/* WHAT WE DO */}
+          <section id="mission" aria-labelledby="mission-h" className="relative py-[clamp(5rem,11vw,9rem)]">
+            <div className="mx-auto w-full max-w-[1120px] px-[clamp(1.25rem,5vw,2.5rem)]">
+              <DecodedEyebrow rule text="Our mission" />
+              <Reveal>
+                <h2
+                  id="mission-h"
+                  className="m-0 mb-[clamp(1.6rem,3vw,2.4rem)] max-w-[18ch] font-[family-name:var(--font-montserrat)] text-[clamp(1.9rem,4.2vw,3rem)] leading-[1.05] font-bold tracking-[-0.015em]"
+                >
+                  Three things, for people building for their own community.
+                </h2>
               </Reveal>
-            ))}
-          </div>
-        </div>
-      </section>
 
-      {/* HOW IT WORKS — orbit section */}
-      <OrbitPrograms />
-
-      {/* PROJECTS */}
-      <section id="projects" aria-labelledby="projects-h" className="relative py-[clamp(5rem,11vw,9rem)]">
-        <div className="mx-auto w-full max-w-[1120px] px-[clamp(1.25rem,5vw,2.5rem)]">
-          <DecodedEyebrow rule text="Projects" />
-          <Reveal>
-            <h2
-              id="projects-h"
-              className="m-0 mb-[clamp(1.6rem,3vw,2.4rem)] max-w-[18ch] font-[family-name:var(--font-montserrat)] text-[clamp(1.9rem,4.2vw,3rem)] leading-[1.05] font-bold tracking-[-0.015em]"
-            >
-              The showcase is empty on purpose.
-            </h2>
-          </Reveal>
-          <Reveal delay={0.08}>
-            <p className="-mt-4 mb-[clamp(2rem,4vw,2.8rem)] max-w-[58ch] text-[clamp(1rem,1.5vw,1.12rem)] text-[#9fb2c4]">
-              We just opened, so nothing here is borrowed or invented. These slots belong to the
-              first projects that come through the Discord — yours can be one of them.
-            </p>
-          </Reveal>
-
-          <div className="grid grid-cols-[repeat(auto-fit,minmax(200px,1fr))] gap-[clamp(1rem,2vw,1.4rem)]">
-            {["01", "02", "03"].map((n, i) => (
-              <Reveal key={n} delay={i * 0.1}>
-                <Slot n={n} />
-              </Reveal>
-            ))}
-          </div>
-
-          <Reveal delay={0.15}>
-            <p className="m-0 mt-[clamp(1.6rem,3vw,2.2rem)] max-w-[62ch] text-[0.95rem] text-[#9fb2c4]">
-              Building a tool for a club, a campus, a neighborhood, a server, or a nonprofit?
-              That&apos;s the kind of thing we&apos;re looking for.
-            </p>
-          </Reveal>
-        </div>
-      </section>
-
-      {/* what "community" means here, on a loop */}
-      <Marquee />
-
-      {/* FAQ */}
-      <section id="faq" aria-labelledby="faq-h" className="relative py-[clamp(5rem,11vw,9rem)]">
-        <div className="mx-auto w-full max-w-[1120px] px-[clamp(1.25rem,5vw,2.5rem)]">
-          <DecodedEyebrow rule text="FAQ" />
-          <Reveal>
-            <h2
-              id="faq-h"
-              className="m-0 mb-[clamp(1.6rem,3vw,2.4rem)] max-w-[18ch] font-[family-name:var(--font-montserrat)] text-[clamp(1.9rem,4.2vw,3rem)] leading-[1.05] font-bold tracking-[-0.015em]"
-            >
-              Questions we get.
-            </h2>
-          </Reveal>
-
-          <Reveal delay={0.1}>
-            <Accordion type="single" collapsible className="max-w-[760px] border-t border-[#2f89c5]/18">
-              {FAQS.map((faq) => (
-                <AccordionItem key={faq.q} value={faq.q}>
-                  <AccordionTrigger>{faq.q}</AccordionTrigger>
-                  <AccordionContent>
-                    <p className="m-0 text-[0.97rem] text-[#9fb2c4]">{faq.a}</p>
-                  </AccordionContent>
-                </AccordionItem>
-              ))}
-            </Accordion>
-          </Reveal>
-        </div>
-      </section>
-
-      {/* CTA — get involved */}
-      <section
-        id="involved"
-        aria-labelledby="involved-h"
-        className="border-y border-[#2f89c5]/18 bg-[linear-gradient(180deg,rgba(9,24,38,0.4),transparent)] py-[clamp(4.5rem,10vw,7rem)] text-center"
-      >
-        <div className="mx-auto w-full max-w-[1120px] px-[clamp(1.25rem,5vw,2.5rem)]">
-          <DecodedEyebrow text="Get involved" className="justify-center" />
-          <Reveal>
-            <h2
-              id="involved-h"
-              className="mx-auto m-0 mb-[clamp(1.6rem,3vw,2.4rem)] max-w-[18ch] font-[family-name:var(--font-montserrat)] text-[clamp(1.9rem,4.2vw,3rem)] leading-[1.05] font-bold tracking-[-0.015em]"
-            >
-              Three ways in.
-            </h2>
-          </Reveal>
-
-          <div className="grid grid-cols-[repeat(auto-fit,minmax(200px,1fr))] gap-[clamp(1rem,2vw,1.4rem)] text-left">
-            {WAYS_IN.map((card, i) => (
-              <Reveal key={card.title} delay={i * 0.1}>
-                <TiltCard className="h-full">
-                  <h3 className="m-0 mb-[0.6rem] font-[family-name:var(--font-montserrat)] text-[1.15rem] font-bold tracking-[-0.005em] text-[#f2f6f9]">
-                    {card.title}
-                  </h3>
-                  <p className="m-0 text-[0.97rem] text-[#9fb2c4]">{card.body}</p>
-                </TiltCard>
-              </Reveal>
-            ))}
-          </div>
-
-          <Reveal delay={0.15}>
-            <div className="pt-[clamp(3.5rem,7vw,5.5rem)]">
-              <h2 className="m-0 mb-[clamp(1.8rem,3.5vw,2.4rem)] font-[family-name:var(--font-montserrat)] text-[clamp(2.1rem,6vw,3.6rem)] leading-none font-extrabold tracking-[-0.02em]">
-                Starting small.
-                <br />
-                Building big.
-              </h2>
-              <Button
-                href="https://discord.gg/8FXs9WhC8t"
-                target="_blank"
-                rel="noopener"
-                size="lg"
-              >
-                <DiscordIcon />
-                Join the Discord
-              </Button>
+              <div className="grid grid-cols-[repeat(auto-fit,minmax(200px,1fr))] gap-[clamp(1rem,2vw,1.4rem)]">
+                {MISSION_CARDS.map((card, i) => (
+                  <Reveal key={card.title} delay={i * 0.1}>
+                    <TiltCard className="h-full">
+                      <h3 className="m-0 mb-[0.6rem] font-[family-name:var(--font-montserrat)] text-[1.15rem] font-bold tracking-[-0.005em] text-[#f2f6f9]">
+                        {card.title}
+                      </h3>
+                      <p className="m-0 text-[0.97rem] text-[#9fb2c4]">{card.body}</p>
+                    </TiltCard>
+                  </Reveal>
+                ))}
+              </div>
             </div>
-          </Reveal>
-        </div>
-      </section>
+          </section>
 
+          {/* HOW IT WORKS — orbit section */}
+          <OrbitPrograms />
+
+          {/* PROJECTS */}
+          <section id="projects" aria-labelledby="projects-h" className="relative py-[clamp(5rem,11vw,9rem)]">
+            <div className="mx-auto w-full max-w-[1120px] px-[clamp(1.25rem,5vw,2.5rem)]">
+              <DecodedEyebrow rule text="Projects" />
+              <Reveal>
+                <h2
+                  id="projects-h"
+                  className="m-0 mb-[clamp(1.6rem,3vw,2.4rem)] max-w-[18ch] font-[family-name:var(--font-montserrat)] text-[clamp(1.9rem,4.2vw,3rem)] leading-[1.05] font-bold tracking-[-0.015em]"
+                >
+                  The showcase is empty on purpose.
+                </h2>
+              </Reveal>
+              <Reveal delay={0.08}>
+                <p className="-mt-4 mb-[clamp(2rem,4vw,2.8rem)] max-w-[58ch] text-[clamp(1rem,1.5vw,1.12rem)] text-[#9fb2c4]">
+                  We just opened, so nothing here is borrowed or invented. These slots belong to
+                  the first projects that come through the Discord — yours can be one of them.
+                </p>
+              </Reveal>
+
+              <div className="grid grid-cols-[repeat(auto-fit,minmax(200px,1fr))] gap-[clamp(1rem,2vw,1.4rem)]">
+                {["01", "02", "03"].map((n, i) => (
+                  <Reveal key={n} delay={i * 0.1}>
+                    <Slot n={n} />
+                  </Reveal>
+                ))}
+              </div>
+
+              <Reveal delay={0.15}>
+                <p className="m-0 mt-[clamp(1.6rem,3vw,2.2rem)] max-w-[62ch] text-[0.95rem] text-[#9fb2c4]">
+                  Building a tool for a club, a campus, a neighborhood, a server, or a nonprofit?
+                  That&apos;s the kind of thing we&apos;re looking for.
+                </p>
+              </Reveal>
+            </div>
+          </section>
+
+          {/* what "community" means here, on a loop */}
+          <Marquee />
+
+          {/* FAQ */}
+          <section id="faq" aria-labelledby="faq-h" className="relative py-[clamp(5rem,11vw,9rem)]">
+            <div className="mx-auto w-full max-w-[1120px] px-[clamp(1.25rem,5vw,2.5rem)]">
+              <DecodedEyebrow rule text="FAQ" />
+              <Reveal>
+                <h2
+                  id="faq-h"
+                  className="m-0 mb-[clamp(1.6rem,3vw,2.4rem)] max-w-[18ch] font-[family-name:var(--font-montserrat)] text-[clamp(1.9rem,4.2vw,3rem)] leading-[1.05] font-bold tracking-[-0.015em]"
+                >
+                  Questions we get.
+                </h2>
+              </Reveal>
+
+              <Reveal delay={0.1}>
+                <Accordion type="single" collapsible className="max-w-[760px] border-t border-[#2f89c5]/18">
+                  {FAQS.map((faq) => (
+                    <AccordionItem key={faq.q} value={faq.q}>
+                      <AccordionTrigger>{faq.q}</AccordionTrigger>
+                      <AccordionContent>
+                        <p className="m-0 text-[0.97rem] text-[#9fb2c4]">{faq.a}</p>
+                      </AccordionContent>
+                    </AccordionItem>
+                  ))}
+                </Accordion>
+              </Reveal>
+            </div>
+          </section>
+
+          {/* CTA — get involved */}
+          <section
+            id="involved"
+            aria-labelledby="involved-h"
+            className="border-y border-[#2f89c5]/18 py-[clamp(4.5rem,10vw,7rem)] text-center"
+          >
+            <div className="mx-auto w-full max-w-[1120px] px-[clamp(1.25rem,5vw,2.5rem)]">
+              <DecodedEyebrow text="Get involved" className="justify-center" />
+              <Reveal>
+                <h2
+                  id="involved-h"
+                  className="mx-auto m-0 mb-[clamp(1.6rem,3vw,2.4rem)] max-w-[18ch] font-[family-name:var(--font-montserrat)] text-[clamp(1.9rem,4.2vw,3rem)] leading-[1.05] font-bold tracking-[-0.015em]"
+                >
+                  Three ways in.
+                </h2>
+              </Reveal>
+
+              <div className="grid grid-cols-[repeat(auto-fit,minmax(200px,1fr))] gap-[clamp(1rem,2vw,1.4rem)] text-left">
+                {WAYS_IN.map((card, i) => (
+                  <Reveal key={card.title} delay={i * 0.1}>
+                    <TiltCard className="h-full">
+                      <h3 className="m-0 mb-[0.6rem] font-[family-name:var(--font-montserrat)] text-[1.15rem] font-bold tracking-[-0.005em] text-[#f2f6f9]">
+                        {card.title}
+                      </h3>
+                      <p className="m-0 text-[0.97rem] text-[#9fb2c4]">{card.body}</p>
+                    </TiltCard>
+                  </Reveal>
+                ))}
+              </div>
+
+              <Reveal delay={0.15}>
+                <div className="pt-[clamp(3.5rem,7vw,5.5rem)]">
+                  <h2 className="m-0 mb-[clamp(1.8rem,3.5vw,2.4rem)] font-[family-name:var(--font-montserrat)] text-[clamp(2.1rem,6vw,3.6rem)] leading-none font-extrabold tracking-[-0.02em]">
+                    Starting small.
+                    <br />
+                    Building big.
+                  </h2>
+                  <Button
+                    href="https://discord.gg/8FXs9WhC8t"
+                    target="_blank"
+                    rel="noopener"
+                    size="lg"
+                  >
+                    <DiscordIcon />
+                    Join the Discord
+                  </Button>
+                </div>
+              </Reveal>
+            </div>
+          </section>
+        </div>
+      </div>
     </>
   );
 }
