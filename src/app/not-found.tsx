@@ -1,10 +1,8 @@
 import { Button } from "@/components/ui/button";
-import BackgroundFX from "@/components/BackgroundFX";
 
 export default function NotFound() {
   return (
     <>
-      <BackgroundFX />
       <div className="grid min-h-svh place-items-center px-[clamp(1.25rem,5vw,2.5rem)] text-center">
         <div className="mx-auto w-full max-w-[760px]">
           {/* 404-only: hero type dialled down, single centered column */}
